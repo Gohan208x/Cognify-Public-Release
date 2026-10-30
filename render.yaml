@@ -1,0 +1,37 @@
+# Render Blueprint - Deploy with one click
+# https://render.com/docs/blueprint-spec
+
+services:
+  # Backend API
+  - type: web
+    name: cognify-backend
+    runtime: java
+    rootDir: cognify-backend
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/cognify-backend-2.0.0.jar
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: cognify-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: cognify-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: cognify-db
+          property: password
+      - key: GEMINI_API_KEY
+        sync: false  # Set manually in dashboard
+      - key: JWT_SECRET
+        sync: false  # Set manually in dashboard - do NOT use generateValue, it breaks sessions on redeploy
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false  # Set to your Vercel URL
+
+databases:
+  - name: cognify-db
+    plan: free
+    databaseName: cognify

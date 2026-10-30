@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production build
+dist/
+dist-ssr/
+*.local
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Backend build and target
+target/
+cognify-backend/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Backend local database and uploads
+cognify-backend/data/
+*.db
+*.mv.db
+*.trace.db
+*.lock.db
+cognify-backend/uploads/
+uploads/
+
+# Build and scratch logs
+build_log*.txt
+compile_log*.txt
+compile_output.txt
+Untitled-*.txt
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.claude/
+.DS_Store
+Thumbs.db

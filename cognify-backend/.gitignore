@@ -1,0 +1,31 @@
+# Build artifacts
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Local database files
+data/
+*.db
+*.mv.db
+*.trace.db
+*.lock.db
+
+# Uploaded content
+uploads/
+
+# Build logs
+build_log*.txt
+compile_log*.txt
+compile_output.txt
+
+# Environment files
+.env
+.env.local
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.iml
+.DS_Store
