@@ -13,7 +13,8 @@ import java.util.Optional;
 public class AdminService {
 
     // The permanent owner who cannot be banned or have admin revoked
-    private static final String OWNER_USERNAME = "ShivamTanwar";
+    @org.springframework.beans.factory.annotation.Value("${app.owner.username:ShivamTanwar}")
+    private String ownerUsername;
 
     @Autowired
     private UserRepository userRepository;
@@ -22,7 +23,7 @@ public class AdminService {
      * Check if user is the permanent owner
      */
     public boolean isOwner(String username) {
-        return OWNER_USERNAME.equalsIgnoreCase(username);
+        return ownerUsername != null && ownerUsername.equalsIgnoreCase(username);
     }
 
     /**
@@ -204,7 +205,7 @@ public class AdminService {
      * Ensure owner always has admin status
      */
     public void ensureOwnerIsAdmin() {
-        userRepository.findByUsername(OWNER_USERNAME).ifPresent(owner -> {
+        if (ownerUsername != null) userRepository.findByUsername(ownerUsername).ifPresent(owner -> {
             if (!owner.getIsAdmin()) {
                 owner.setIsAdmin(true);
                 userRepository.save(owner);

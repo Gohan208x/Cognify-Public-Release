@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class ChannelService {
 
-    private static final String ADMIN_USERNAME = "ShivamTanwar";
+    @org.springframework.beans.factory.annotation.Value("${app.owner.username:ShivamTanwar}")
+    private String adminUsername;
 
     @Autowired
     private ChannelRepository channelRepository;
@@ -154,7 +155,7 @@ public class ChannelService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Only author or admin can delete
-        boolean isAdmin = Boolean.TRUE.equals(user.getIsAdmin()) || ADMIN_USERNAME.equalsIgnoreCase(user.getUsername());
+        boolean isAdmin = Boolean.TRUE.equals(user.getIsAdmin()) || adminUsername != null && adminUsername.equalsIgnoreCase(user.getUsername());
         boolean isAuthor = message.getAuthorId().equals(userId);
 
         if (!isAdmin && !isAuthor) {

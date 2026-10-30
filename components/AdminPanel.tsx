@@ -1,7 +1,7 @@
 /**
  * Admin Panel Component
  * Provides admin-only features for user management, banning, and data modification.
- * Only accessible by ShivamTanwar (owner) or designated admins.
+ * Only accessible by platform owner or designated administrators.
  */
 
 import React, { useState, useEffect } from 'react';

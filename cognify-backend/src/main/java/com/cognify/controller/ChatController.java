@@ -169,7 +169,9 @@ public class ChatController {
             Files.copy(file.getInputStream(), filePath);
 
             // Create file URL with backend base URL
-            String fileUrl = "http://localhost:8080/uploads/chat/" + uniqueFilename;
+            String baseUrl = org.springframework.web.servlet.support.ServletUriComponentsBuilder
+                    .fromCurrentContextPath().build().toUriString();
+            String fileUrl = baseUrl + "/uploads/chat/" + uniqueFilename;
 
             // Create message
             MessageDto result = chatService.sendFileMessage(

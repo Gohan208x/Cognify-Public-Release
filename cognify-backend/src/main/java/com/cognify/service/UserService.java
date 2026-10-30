@@ -25,6 +25,9 @@ public class UserService {
     private final DailyQuestRepository questRepository;
     private final DailyChallengeRepository challengeRepository;
     private final PasswordEncoder passwordEncoder;
+    @org.springframework.beans.factory.annotation.Value("${app.owner.username:ShivamTanwar}")
+    private String ownerUsername;
+
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
@@ -119,7 +122,7 @@ public class UserService {
 
         // ============== ADMIN & BAN CHECKS ==============
         // Ensure owner is always admin
-        if ("ShivamTanwar".equalsIgnoreCase(user.getUsername()) && !user.getIsAdmin()) {
+        if (ownerUsername != null && ownerUsername.equalsIgnoreCase(user.getUsername()) && !user.getIsAdmin()) {
             user.setIsAdmin(true);
             userRepository.save(user);
         }
