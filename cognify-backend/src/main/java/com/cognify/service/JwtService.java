@@ -4,6 +4,8 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,15 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
+    private static final Logger log = LoggerFactory.getLogger(JwtService.class);
+
+    @Value("${jwt.secret:}")
     private String secretKey;
 
-    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:86400000}")
     private long jwtExpiration;
+
+    private SecretKey cachedSignInKey;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -67,27 +73,36 @@ public class JwtService {
                 .getPayload();
     }
 
-    private SecretKey getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        return Keys.hmacShaKeyFor(keyBytes);
+    private synchronized SecretKey getSignInKey() {
+        if (cachedSignInKey != null) {
+            return cachedSignInKey;
+        }
+
+        if (secretKey != null && !secretKey.trim().isEmpty()) {
+            try {
+                byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+                cachedSignInKey = Keys.hmacShaKeyFor(keyBytes);
+                return cachedSignInKey;
+            } catch (Exception e) {
+                log.warn("Invalid base64 string in jwt.secret. Generating an in-memory key instead.");
+            }
+        }
+
+        log.warn("No JWT_SECRET configured. Generating a secure temporary in-memory key for this session.");
+        cachedSignInKey = Jwts.SIG.HS256.key().build();
+        return cachedSignInKey;
     }
 
     /**
      * Extract user ID from JWT token.
      * Looks up the user by username and returns their ID.
-     * Note: For better performance, consider storing userId in JWT claims.
      */
     public Long extractUserId(String token) {
-        String username = extractUsername(token);
-        // This requires UserRepository to be available
-        // For now, we'll use a custom claim approach if userId is stored in token
-        // Otherwise, we need to lookup the user
         Claims claims = extractAllClaims(token);
         Object userIdClaim = claims.get("userId");
         if (userIdClaim != null) {
             return Long.valueOf(userIdClaim.toString());
         }
-        // Fallback - this should be avoided in production
         return null;
     }
 
